@@ -87,9 +87,8 @@ func Test_WithBCC(t *testing.T) {
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
-	team := os.Getenv("SHIM_EMAIL_ALT")
 	shim := swushim.CreateClient(&swushim.CourierClientOptions{
-		TeamEmail: &team,
+		TeamEmails: []string{os.Getenv("SHIM_EMAIL_ALT")},
 	})
 	_, err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
 	assert.Nil(t, err)

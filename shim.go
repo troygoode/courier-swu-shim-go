@@ -14,17 +14,17 @@ import (
 
 // CourierClientOptions let you configure the Courier Client
 type CourierClientOptions struct {
-	AuthToken *string
-	BaseURL   *string
-	TeamEmail *string
+	AuthToken  *string
+	BaseURL    *string
+	TeamEmails []string
 }
 
 // DefaultOptions specify Courier's recommended default client configuration
 func DefaultOptions() CourierClientOptions {
 	return CourierClientOptions{
-		AuthToken: nil, // wil lget from env var
-		BaseURL:   nil, // will use default
-		TeamEmail: nil, // for use with bccTeam boolean
+		AuthToken:  nil, // wil lget from env var
+		BaseURL:    nil, // will use default
+		TeamEmails: nil, // for use with bccTeam boolean
 	}
 }
 
@@ -106,8 +106,8 @@ func (shim *SWUShim) sendEmailNotification(recipientID string, recipientEmail st
 	if cc != nil && len(cc) > 0 {
 		data["cc"] = strings.Join(cc, ",")
 	}
-	if bccTeam == true && shim.options.TeamEmail != nil {
-		data["bcc"] = shim.options.TeamEmail
+	if bccTeam == true && shim.options.TeamEmails != nil && len(shim.options.TeamEmails) > 0 {
+		data["bcc"] = strings.Join(shim.options.TeamEmails, ",")
 	}
 
 	body := make(map[string]interface{})

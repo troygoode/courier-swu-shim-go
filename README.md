@@ -20,10 +20,9 @@ tmplParams["name"] = "Jane Doe"
 tmplParams["email"] = "inviter@example.com"
 tmplParams["inviteUrl"] = "Example"
 
-team := "team@example.com"
 shim := swushim.CreateClient(&swushim.CourierClientOptions{
   // AuthToken: &authToken, // OPTIONAL: will default to COURIER_AUTH_TOKEN environment variable
-  TeamEmail: &team, // email address to be used when bccTeam=true
+  TeamEmails: []string{"team@example.com"}, // email addresses to be used when bccTeam=true
 })
 err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
 ```
