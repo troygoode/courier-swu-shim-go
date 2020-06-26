@@ -2,13 +2,12 @@
 
 Golang shim to send Courier messages with a SWU-esque API
 
-## Example using shim
+## Using this shim
 
 ```golang
 var recipientName *string
 var cc []string
 
-authToken := os.Getenv("COURIER_AUTH_TOKEN")
 recipientEmail := os.Getenv("SHIM_EMAIL_TO")
 recipientName = nil
 templateID := os.Getenv("SHIM_TEMPLATE_ID")
@@ -21,36 +20,12 @@ tmplParams["name"] = "Jane Doe"
 tmplParams["email"] = "inviter@example.com"
 tmplParams["inviteUrl"] = "Example"
 
-shim := swushim.CreateClient(authToken, nil)
+team := "team@example.com"
+shim := swushim.CreateClient(&swushim.CourierClientOptions{
+  // AuthToken: &authToken, // OPTIONAL: will default to COURIER_AUTH_TOKEN environment variable
+  TeamEmail: &team, // email address to be used when bccTeam=true
+})
 err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
-```
-
-## Legacy Callsite
-
-```golang
-func (swu *swuMailer) sendEmailWithAttachment(recipientEmail string, recipientName *string, templateId string, cc []string, bccTeam bool, attachments map[string]*bytes.Reader, tmplParams map[string]interface{}) {
-  // assembles recipients into expected email types, reads attachments into []byte, makes POST to SWU API
-}
-func (swu *swuMailer) sendEmail(recipientEmail string, recipientName *string, templateId string, cc []string, bccTeam bool, tmplParams map[string]interface{}) {
-	swu.sendEmailWithAttachment(recipientEmail, recipientName, templateId, cc, bccTeam, nil, tmplParams)
-}
-```
-
-## Testing
-
-Create `env.sh` locally:
-
-```bash
-export COURIER_AUTH_TOKEN=TODO
-export SHIM_TEMPLATE_ID=TODO
-export SHIM_EMAIL_TO=TODO
-```
-
-Then run:
-
-```bash
-source ./env.sh
-go test
 ```
 
 ## License

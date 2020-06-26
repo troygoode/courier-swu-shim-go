@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/trycourier/courier-go/v2"
@@ -13,6 +14,7 @@ import (
 
 // CourierClientOptions let you configure the Courier Client
 type CourierClientOptions struct {
+	AuthToken *string
 	BaseURL   *string
 	TeamEmail *string
 }
@@ -20,6 +22,7 @@ type CourierClientOptions struct {
 // DefaultOptions specify Courier's recommended default client configuration
 func DefaultOptions() CourierClientOptions {
 	return CourierClientOptions{
+		AuthToken: nil, // wil lget from env var
 		BaseURL:   nil, // will use default
 		TeamEmail: nil, // for use with bccTeam boolean
 	}
@@ -32,12 +35,19 @@ type SWUShim struct {
 }
 
 // CreateClient is a shim that maps existing SWU calls to Courier
-func CreateClient(authToken string, options *CourierClientOptions) *SWUShim {
+func CreateClient(options *CourierClientOptions) *SWUShim {
 	var opt CourierClientOptions
 	if options == nil {
 		opt = DefaultOptions()
 	} else {
 		opt = *options
+	}
+
+	var authToken string
+	if opt.AuthToken == nil {
+		authToken = os.Getenv(("COURIER_AUTH_TOKEN"))
+	} else {
+		authToken = *opt.AuthToken
 	}
 
 	return &SWUShim{
@@ -47,12 +57,12 @@ func CreateClient(authToken string, options *CourierClientOptions) *SWUShim {
 }
 
 // SendEmail sends an email via Courier
-func (shim *SWUShim) SendEmail(recipientEmail string, recipientName *string, templateID string, cc []string, bccTeam bool, tmplParams map[string]interface{}) error {
+func (shim *SWUShim) SendEmail(recipientEmail string, recipientName *string, templateID string, cc []string, bccTeam bool, tmplParams map[string]interface{}) (string, error) {
 	return shim.SendEmailWithAttachment(recipientEmail, recipientName, templateID, cc, bccTeam, nil, tmplParams)
 }
 
 // SendEmailWithAttachment sends an email via Courier, with attachment(s)
-func (shim *SWUShim) SendEmailWithAttachment(recipientEmail string, recipientName *string, templateID string, cc []string, bccTeam bool, attachments map[string]*bytes.Reader, tmplParams map[string]interface{}) error {
+func (shim *SWUShim) SendEmailWithAttachment(recipientEmail string, recipientName *string, templateID string, cc []string, bccTeam bool, attachments map[string]*bytes.Reader, tmplParams map[string]interface{}) (string, error) {
 	var files []attachment
 
 	if attachments != nil {
@@ -66,8 +76,7 @@ func (shim *SWUShim) SendEmailWithAttachment(recipientEmail string, recipientNam
 		}
 	}
 
-	_, err := shim.sendEmailNotification(recipientEmail, recipientEmail, recipientName, templateID, cc, bccTeam, files, tmplParams)
-	return err
+	return shim.sendEmailNotification(recipientEmail, recipientEmail, recipientName, templateID, cc, bccTeam, files, tmplParams)
 }
 
 // Attachment specifies the details of an email file attachment

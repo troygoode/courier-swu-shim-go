@@ -14,7 +14,6 @@ func Test_SendEmail(t *testing.T) {
 	var recipientName *string
 	var cc []string
 
-	authToken := os.Getenv("COURIER_AUTH_TOKEN")
 	recipientEmail := os.Getenv("SHIM_EMAIL_TO")
 	recipientName = nil
 	templateID := os.Getenv("SHIM_TEMPLATE_ID")
@@ -27,15 +26,14 @@ func Test_SendEmail(t *testing.T) {
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
-	shim := swushim.CreateClient(authToken, nil)
-	err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
+	shim := swushim.CreateClient(nil)
+	_, err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
 	assert.Nil(t, err)
 }
 
 func Test_WithName(t *testing.T) {
 	var cc []string
 
-	authToken := os.Getenv("COURIER_AUTH_TOKEN")
 	recipientEmail := os.Getenv("SHIM_EMAIL_TO")
 	recipientName := "Namely Namename"
 	templateID := os.Getenv("SHIM_TEMPLATE_ID")
@@ -48,15 +46,14 @@ func Test_WithName(t *testing.T) {
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
-	shim := swushim.CreateClient(authToken, nil)
-	err := shim.SendEmail(recipientEmail, &recipientName, templateID, cc, bccTeam, tmplParams)
+	shim := swushim.CreateClient(nil)
+	_, err := shim.SendEmail(recipientEmail, &recipientName, templateID, cc, bccTeam, tmplParams)
 	assert.Nil(t, err)
 }
 
 func Test_WithCC(t *testing.T) {
 	var recipientName *string
 
-	authToken := os.Getenv("COURIER_AUTH_TOKEN")
 	recipientEmail := os.Getenv("SHIM_EMAIL_TO")
 	recipientName = nil
 	templateID := os.Getenv("SHIM_TEMPLATE_ID")
@@ -69,8 +66,8 @@ func Test_WithCC(t *testing.T) {
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
-	shim := swushim.CreateClient(authToken, nil)
-	err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
+	shim := swushim.CreateClient(nil)
+	_, err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
 	assert.Nil(t, err)
 }
 
@@ -78,7 +75,6 @@ func Test_WithBCC(t *testing.T) {
 	var recipientName *string
 	var cc []string
 
-	authToken := os.Getenv("COURIER_AUTH_TOKEN")
 	recipientEmail := os.Getenv("SHIM_EMAIL_TO")
 	recipientName = nil
 	templateID := os.Getenv("SHIM_TEMPLATE_ID")
@@ -91,11 +87,11 @@ func Test_WithBCC(t *testing.T) {
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
-	shim := swushim.CreateClient(authToken, &swushim.CourierClientOptions{
-		BaseURL:   nil,
-		TeamEmail: &recipientEmail,
+	team := recipientEmail
+	shim := swushim.CreateClient(&swushim.CourierClientOptions{
+		TeamEmail: &team,
 	})
-	err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
+	_, err := shim.SendEmail(recipientEmail, recipientName, templateID, cc, bccTeam, tmplParams)
 	assert.Nil(t, err)
 }
 
@@ -103,7 +99,6 @@ func Test_WithAttachment(t *testing.T) {
 	var recipientName *string
 	var cc []string
 
-	authToken := os.Getenv("COURIER_AUTH_TOKEN")
 	recipientEmail := os.Getenv("SHIM_EMAIL_TO")
 	recipientName = nil
 	templateID := os.Getenv("SHIM_TEMPLATE_ID")
@@ -123,7 +118,7 @@ func Test_WithAttachment(t *testing.T) {
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
-	shim := swushim.CreateClient(authToken, nil)
-	err := shim.SendEmailWithAttachment(recipientEmail, recipientName, templateID, cc, bccTeam, attachments, tmplParams)
+	shim := swushim.CreateClient(nil)
+	_, err := shim.SendEmailWithAttachment(recipientEmail, recipientName, templateID, cc, bccTeam, attachments, tmplParams)
 	assert.Nil(t, err)
 }
