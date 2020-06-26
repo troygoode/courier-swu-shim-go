@@ -57,12 +57,12 @@ func Test_WithCC(t *testing.T) {
 	recipientEmail := os.Getenv("SHIM_EMAIL_TO")
 	recipientName = nil
 	templateID := os.Getenv("SHIM_TEMPLATE_ID")
-	cc := []string{recipientEmail}
+	cc := []string{os.Getenv("SHIM_EMAIL_ALT")}
 	bccTeam := false
 
 	tmplParams := make(map[string]interface{})
 	tmplParams["orgName"] = "Example"
-	tmplParams["name"] = "Jane Doe"
+	tmplParams["name"] = "CC_Test"
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
@@ -83,11 +83,11 @@ func Test_WithBCC(t *testing.T) {
 
 	tmplParams := make(map[string]interface{})
 	tmplParams["orgName"] = "Example"
-	tmplParams["name"] = "Jane Doe"
+	tmplParams["name"] = "BCC_Test"
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
-	team := recipientEmail
+	team := os.Getenv("SHIM_EMAIL_ALT")
 	shim := swushim.CreateClient(&swushim.CourierClientOptions{
 		TeamEmail: &team,
 	})
@@ -114,7 +114,7 @@ func Test_WithAttachment(t *testing.T) {
 
 	tmplParams := make(map[string]interface{})
 	tmplParams["orgName"] = "Example"
-	tmplParams["name"] = "Jane Doe"
+	tmplParams["name"] = "Attachment_Test"
 	tmplParams["email"] = "inviter@example.com"
 	tmplParams["inviteUrl"] = "Example"
 
