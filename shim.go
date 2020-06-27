@@ -130,8 +130,8 @@ func (shim *SWUShim) sendEmailNotification(recipientID string, recipientEmail st
 
 			f := make(map[string]interface{})
 			f["filename"] = attachments[index].filename
-			f["type"] = attachments[index].contentType
-			f["content"] = contentBase64
+			f["contentType"] = attachments[index].contentType
+			f["data"] = contentBase64
 			files = append(files, f)
 		}
 		overrideMailgun["attachments"] = files
